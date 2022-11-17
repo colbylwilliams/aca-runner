@@ -1,0 +1,86 @@
+{
+    "version": "2.0.0",
+    "type": "shell",
+    "options": {
+        "cwd": "${workspaceFolder}"
+    },
+    "problemMatcher": [],
+    "presentation": {
+        "showReuseMessage": false,
+    },
+    "tasks": [
+        {
+            "label": "docker: build push (latest)",
+            "detail": "Build and push the latest docker image",
+            "type": "shell",
+            "command": "echo done.",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "docker: build",
+                "docker: push (latest)"
+            ],
+            "icon": {
+                "id": "rocket",
+                "color": "terminal.ansiBlue"
+            },
+        },
+        {
+            "label": "docker: push (latest)",
+            "command": "docker",
+            "args": [
+                "push",
+                // "ghcr.io/colbylwilliams/aca-runner/acarunner:latest"
+                "acarunners.azurecr.io/acarunner:latest"
+            ],
+            "dependsOn": [
+                "docker: push"
+            ],
+            "icon": {
+                "id": "rocket",
+                "color": "terminal.ansiBlue"
+            },
+        },
+        {
+            "label": "docker: push",
+            "command": "docker",
+            "args": [
+                "push",
+                // "ghcr.io/colbylwilliams/aca-runner/acarunner:${input:imageTagVersion}"
+                "acarunners.azurecr.io/acarunner:${input:imageTagVersion}"
+            ],
+            "icon": {
+                "id": "rocket",
+                "color": "terminal.ansiBlue"
+            },
+        },
+        {
+            "label": "docker: build",
+            "type": "docker-build",
+            "dockerBuild": {
+                "context": "${workspaceFolder}${pathSeparator}runner",
+                "dockerfile": "${workspaceFolder}${pathSeparator}runner${pathSeparator}Dockerfile",
+                // "tag": "ghcr.io/colbylwilliams/aca-runner/acarunner:${input:imageTagVersion}",
+                // "customOptions": "-t \"ghcr.io/colbylwilliams/aca-runner/acarunner:latest\"",
+                "tag": "acarunners.azurecr.io/acarunner:${input:imageTagVersion}",
+                "customOptions": "-t \"acarunners.azurecr.io/acarunner:latest\"",
+                "buildArgs": {
+                    "IMAGE_VERSION": "${input:imageTagVersion}"
+                },
+                "labels": {
+                    "includeDefaults": false
+                }
+            },
+            "icon": {
+                "id": "rocket",
+                "color": "terminal.ansiBlue"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "imageTagVersion",
+            "type": "promptString",
+            "description": "Version for this tag ex. 1.0.0 (also builds a latest version).",
+        }
+    ]
+}
