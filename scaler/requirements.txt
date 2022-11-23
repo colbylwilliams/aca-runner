@@ -1,0 +1,6 @@
+Flask
+ipaddress
+requests
+pyOpenSSL==16.2.0
+azure-identity
+azure-storage-queue

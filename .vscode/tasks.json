@@ -29,8 +29,8 @@
             "command": "docker",
             "args": [
                 "push",
-                // "ghcr.io/colbylwilliams/aca-runner/acarunner:latest"
-                "acarunners.azurecr.io/acarunner:latest"
+                // "ghcr.io/colbylwilliams/aca-runner/aca${input:imageName}:latest"
+                "acarunners.azurecr.io/aca${input:imageName}:latest"
             ],
             "dependsOn": [
                 "docker: push"
@@ -45,8 +45,8 @@
             "command": "docker",
             "args": [
                 "push",
-                // "ghcr.io/colbylwilliams/aca-runner/acarunner:${input:imageTagVersion}"
-                "acarunners.azurecr.io/acarunner:${input:imageTagVersion}"
+                // "ghcr.io/colbylwilliams/aca-runner/aca${input:imageName}:${input:imageTagVersion}"
+                "acarunners.azurecr.io/aca${input:imageName}:${input:imageTagVersion}"
             ],
             "icon": {
                 "id": "rocket",
@@ -57,12 +57,12 @@
             "label": "docker: build",
             "type": "docker-build",
             "dockerBuild": {
-                "context": "${workspaceFolder}${pathSeparator}runner",
-                "dockerfile": "${workspaceFolder}${pathSeparator}runner${pathSeparator}Dockerfile",
-                // "tag": "ghcr.io/colbylwilliams/aca-runner/acarunner:${input:imageTagVersion}",
-                // "customOptions": "-t \"ghcr.io/colbylwilliams/aca-runner/acarunner:latest\"",
-                "tag": "acarunners.azurecr.io/acarunner:${input:imageTagVersion}",
-                "customOptions": "-t \"acarunners.azurecr.io/acarunner:latest\"",
+                "context": "${workspaceFolder}${pathSeparator}${input:imageName}",
+                "dockerfile": "${workspaceFolder}${pathSeparator}${input:imageName}${pathSeparator}Dockerfile",
+                // "tag": "ghcr.io/colbylwilliams/aca-runner/aca${input:imageName}:${input:imageTagVersion}",
+                // "customOptions": "-t \"ghcr.io/colbylwilliams/aca-runner/aca${input:imageName}:latest\"",
+                "tag": "acarunners.azurecr.io/aca${input:imageName}:${input:imageTagVersion}",
+                "customOptions": "-t \"acarunners.azurecr.io/aca${input:imageName}:latest\"",
                 "buildArgs": {
                     "IMAGE_VERSION": "${input:imageTagVersion}"
                 },
@@ -74,9 +74,43 @@
                 "id": "rocket",
                 "color": "terminal.ansiBlue"
             }
+        },
+        {
+            "label": "venv: create",
+            "command": "python3",
+            "args": [
+                "-m",
+                "venv",
+                ".venv"
+            ],
+            "icon": {
+                "id": "terminal",
+                "color": "terminal.ansiMagenta"
+            }
+        },
+        {
+            "label": "venv: delete",
+            "command": "rm",
+            "args": [
+                "-r",
+                ".venv"
+            ],
+            "icon": {
+                "id": "terminal",
+                "color": "terminal.ansiMagenta"
+            }
         }
     ],
     "inputs": [
+        {
+            "id": "imageName",
+            "type": "pickString",
+            "description": "Image name",
+            "options": [
+                "runner",
+                "scaler"
+            ]
+        },
         {
             "id": "imageTagVersion",
             "type": "promptString",
